@@ -1,63 +1,61 @@
-import React from 'react';
+import {useState} from 'react';
 import Statistics from "./Statistics";
 import FeedbackOptions from "./FeedbackOptions";
 import Section from "./Section";
 import Notification from './Notification';
 import styled from 'styled-components';
 
-class Feedback extends React.Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+const Feedback = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const handleIncrement = event => {
+    switch (event.target.textContent) {
+      case 'good':
+        setGood(prevGood => prevGood + 1);
+        break;
+
+      case 'neutral':
+        setNeutral(prevNeutal => prevNeutal + 1);
+        break;
+
+      case 'bad':
+        setBad(prevBad => prevBad + 1);
+        break;
+
+      default:
+        return;
+    }
   };
+  
+  const countTotalFeedback = () => good + neutral + bad;
 
-  handleIncrement = event => {
-    const e = event.target.textContent;
-    this.setState(prevState => {
-      return { [e]: prevState[e] + 1 };
-    });
-  };
+  const countPositiveFeedbackPercentage = () => Math.floor((good * 100) / countTotalFeedback());
 
-  countTotalFeedback() {
-    const arrayDataCount = Object.values(this.state);
-    const count =  arrayDataCount.reduce((acc, item) => {
-      return acc + item;
-    }, 0);
-    return count;
-  }
+  const options = [ 'good', 'neutral', 'bad' ];
 
-  countPositiveFeedbackPercentage() {
-    return Math.floor((this.state.good * 100) / this.countTotalFeedback());
-  }
-
-  render() {
-    const keyName = Object.keys(this.state);
-    const { good, neutral, bad } = this.state;
-    const total = this.countTotalFeedback();
-    const percentage = this.countPositiveFeedbackPercentage();
-
-    return (
+return (
       <>
       <Card>
         <Section title='Leave your feedback please'>
-          <FeedbackOptions options={keyName} onLeaveFeedback={this.handleIncrement}/>
+          <FeedbackOptions options={options} onLeaveFeedback={handleIncrement}/>
         </Section>
         <Section title='Statistics'>
-          {total === 0 ? (<Notification message={'There is no feedback'} />) : (
+          {countTotalFeedback() === 0 ? (<Notification message={'There is no feedback'} />) : (
               <Statistics
                 good={good}
                 neutral={neutral}
                 bad={bad}
-                total={total}
-                positivePercentage={percentage} />
+                total={countTotalFeedback()}
+                positivePercentage={countPositiveFeedbackPercentage()} />
           )}
         </Section>
         </Card>
         </>
     );
-  }
-}
+  };
+
 
 const Card = styled.div`
 border: 1px solid grey;
@@ -71,6 +69,5 @@ border: 1px solid grey;
     padding: 20px;
     width: 400px;
     background-color: rgb(250,240,230);`;
-
 
 export default Feedback;
