@@ -30,6 +30,7 @@ const Feedback = () => {
   };
   
   const countTotalFeedback = () => good + neutral + bad;
+  const total = countTotalFeedback();
 
   const countPositiveFeedbackPercentage = () => Math.floor((good * 100) / countTotalFeedback());
 
@@ -42,12 +43,12 @@ return (
           <FeedbackOptions options={options} onLeaveFeedback={handleIncrement}/>
         </Section>
         <Section title='Statistics'>
-          {countTotalFeedback() === 0 ? (<Notification message={'There is no feedback'} />) : (
+          {total === 0 ? (<Notification message={'There is no feedback'} />) : (
               <Statistics
                 good={good}
                 neutral={neutral}
                 bad={bad}
-                total={countTotalFeedback()}
+                total={total}
                 positivePercentage={countPositiveFeedbackPercentage()} />
           )}
         </Section>
